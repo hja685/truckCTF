@@ -1,25 +1,38 @@
 #include <FlexCAN.h>
 
+//Modes for each flag
+#define MODE1 = 1;
+#define MODE2 = 2;
+#define MODE3 = 3;
+#define MODE4 = 4;
+#define MODE5 = 5;
+#define MODE6 = 6;
+#define MODE7 = 7;
+#define MODE8 = 8;
+
+int MODE = 1;
+
 //Set up timing variables
-#define TXPeriod100 100
+#define TXPeriod100 100 //this sets your tx timer
 elapsedMillis TXTimer100;
 
-//Create a counter to keep track of message traffic
-uint32_t RXCount = 0;
-uint32_t TXCount = 0;
+//
+#define DOSPeriod 30000
+elapsedMillis DOSTimer;
 
 //Declare the CAN message variable that includes
 //ID, Data Length Code, and Data Buffer
 static CAN_message_t txmsg,rxmsg;
 
-//Keep track of the LED state so we can toggle it.
-boolean LEDstate = 0;
+//messages
+
+flag_1 = [0x66, 0x6c, 0x61, 0x67, 0x20, 0x31, 0x3a, 0x00];
+hash1_1 = [0x7f, 0x36, 0x7f, 0x92, 0xf8, 0x27, 0x9d, 0xb1];
+hash1_2 = [0x82, 0x6a, 0x6e, 0x5d, 0x53, 0xf4, 0x30, 0xa4];
+flag_2 = [0x32, 0x73, 0x6c, 0x6f, 0x77, 0x64, 0x77, 0x6e];
 
 void setup() {
   // put your setup code here, to run once:
-  
-  //enable the LED Pin
-  pinMode(LED_BUILTIN, OUTPUT);
   
   //Start the CAN message on the first CAN controller (works on both the Teensy 3.2 and Teensy 3.6)
   Can0.begin(250000);
@@ -34,13 +47,93 @@ void setup() {
 
   //define the non changing parts of the CAN message to be transmitted.
   txmsg.ext=1;
-  txmsg.id=0x101;
+  txmsg.id=0x000000F9;
   txmsg.len=8;
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  //different CTF Modes
+  if(MODE == 1){
+    //what to do during flag 1 objective
+    //this is waiting for the user to have found flag 1 and decoded it to allow the user to advance to the second flag. 
+    if (Can0.available()) {
+    Can0.read(rxmsg);
+    if(rxmsg.id == 0x18FEF100){
+      if(rxmsg.buf[2] == __ && rxmsg.buf[3] == __) { //need to find the values associated with 80mph from BEN
+    MODE = MODE2;
+      }
+      
+    //so this is the first MD5 HASHed flag. The message is "flag 1:null|7f367f92f8279db1826a6e5d53f430a4" which means "flag 1:gofaster"
+    for(int i = 0; int<= 8; i++){
+      txmsg.buf[i] = flag_1[i];
+      Can0.write(txmsg);
+      Can1.write(txmsg);
+      delay(100);
+    for(int i = 0; int<= 8; i++){
+      txmsg.buf[i] = hash1_1[i];
+      Can0.write(txmsg);
+      Can1.write(txmsg);
+      delay(100);
+    for(int i = 0; int<= 8; i++){
+      txmsg.buf[i] = hash1_2[i];
+      Can0.write(txmsg);
+      Can1.write(txmsg);
+    }
+  }
+  if(MODE == 2){
+    //what to do during flag 2 objective
+    MODE = MODE3;
+  }
+  
+  if(MODE == 3){
+    //what to do during flag 3 objective
+    MODE = MODE4;
+  }
+  
+  if(MODE == 4){
+    //what to do during flag 4 objective
+    MODE = MODE5;
+  }
+  if(MODE == 5){
+    //what to do during flag 5 objective
+    MODE = MODE6;
+  }
+  if(MODE == 6){
+    //what to do during flag 6 objective
+    MODE = MODE7;
+  }
+  if(MODE == 7){
+    //what to do during flag 7 objective
+    MODE = MODE8;
+  }
+  if(MODE == 8){
+    //what to do during flag 8 objective
+    MODE = MODE9;
+  }
 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   //Poll for new messages
   if (Can0.available()) {
     Can0.read(rxmsg);
